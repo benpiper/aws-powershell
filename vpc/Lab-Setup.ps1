@@ -1,8 +1,8 @@
 # Lab-Setup.ps1
 
 # Install and load the AWS PowerShell module
-. ../Load-AWSPowerShell.ps1
-Load-AWSPowerShell
+. ../Install-AWSPowerShell.ps1
+Install-AWSPowerShell
 
 # Set AWS credentials and region
 $AWSAccessKey="AKIAJTC5OJWSJZDZZ3XA" # Replace with your access key
