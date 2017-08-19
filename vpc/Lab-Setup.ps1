@@ -13,7 +13,7 @@ $AWSRegion = "us-east-1"
 # Set AWS credentials and store them
 Set-AWSCredential -AccessKey $AWSAccessKey -SecretKey $AWSSecretKey -StoreAs $AWSProfileName
 
-# Then load them from the store
+# Load the credentials for this session
 Set-AWSCredential -ProfileName $AWSProfileName
 
 # Set the default region
