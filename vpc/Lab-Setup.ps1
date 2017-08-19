@@ -1,13 +1,13 @@
 # Lab-Setup.ps1
 
 # Install and load the AWS PowerShell module
-. ./Load-AWSPowerShell.ps1
+. ../Load-AWSPowerShell.ps1
 Load-AWSPowerShell
 
 # Set AWS credentials and region
-$AWSAccessKey="AKIAJTC5OJWSJZDZZ3XA"
-$AWSSecretKey="dwezq4SzmsvsiGgxy++l1Mf/0VOL0bUXRx1Vu3BN"
-$AWSProfileName="ps-aws-networking-deep-dive"
+$AWSAccessKey="AKIAJTC5OJWSJZDZZ3XA" # Replace with your access key
+$AWSSecretKey="dwezq4SzmsvsiGgxy++l1Mf/0VOL0bUXRx1Vu3BN" # Replace with your secret key
+$AWSProfileName="aws-networking-deep-dive-vpc"
 $AWSRegion = "us-east-1"
 
 # Set AWS credentials and store them
