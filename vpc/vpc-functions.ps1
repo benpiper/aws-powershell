@@ -3,6 +3,26 @@
 # ben@benpiper.com
 
 
+### Create-NameTag
+
+# Example variables
+# $name = "Webtier VPC"
+# $resourceID = "vpc-12345678"
+
+function Create-NameTag {
+    param (
+        [Parameter(Mandatory)] [string]$name,
+        [Parameter(Mandatory)] [string]$resourceID
+    )
+     # Create a tag object with the key "Name" and specified value
+     $tag = New-Object Amazon.EC2.Model.Tag
+     $tag.Key = "Name"
+     $tag.Value = $name
+ 
+     # Attach the tag to the subnet
+     New-EC2Tag -Tag $tag -Resource $resourceID
+}
+
 ### Create-RouteTable
 
 #Example variables
@@ -19,12 +39,7 @@ function Create-RouteTable {
     $routeTable = New-EC2RouteTable -VpcId $vpc.VpcId
 
     #Create "Name" tag for the route table
-    $routeTableTag = New-Object Amazon.EC2.Model.Tag
-    $routeTableTag.Key = "Name"
-    $routeTableTag.Value = $routeTableName
-
-    #Attach the tag to the route table
-    New-EC2Tag -Tag $routeTableTag -Resource $routeTable.RouteTableId
+    Create-NameTag -name $routeTableName -resourceID $routeTable.RouteTableId
 
     #If subnet specified, register route table with subnet
     if ($subnet) {
@@ -72,14 +87,9 @@ function Create-Subnet {
     # Create subnet containing IPv4 CIDR and generated IPv6 subnet
     $subnet = New-EC2Subnet -AvailabilityZone $zone -VpcId $vpc.VpcId -CidrBlock $IPv4CIDR -Ipv6CidrBlock $IPv6subnet
 
-    # Create a tag object with the friendly subnet name
-    $subnetTag = New-Object Amazon.EC2.Model.Tag
-    $subnetTag.Key = "Name"
-    $subnetTag.Value = $name
-
-    # Attach the tag to the subnet
-    New-EC2Tag -Tag $subnetTag -Resource $subnet.SubnetId
-
+    #Create Name tag for the subnet
+    Create-NameTag -name $name -resourceID $subnet.SubnetId
+    
     # Return the subnet
     $subnet = get-ec2subnet -SubnetId $subnet.SubnetId
     return $subnet
@@ -101,19 +111,36 @@ function Create-VPC {
     # Create new vpc with CIDR block and have AWS allocate an IPv6 CIDR block
     $vpc = New-EC2Vpc -CidrBlock $vpcCidr -AmazonProvidedIpv6CidrBlock $true
 
-    # Create a tag object with a friendly VPC name
-    $vpcTag = New-Object Amazon.EC2.Model.Tag
-    $vpcTag.Key = "Name"
-    $vpcTag.Value = $vpcName
-
-    # Attach the tag to the VPC
-    New-EC2Tag -Tag $vpcTag -Resource $vpc.VpcId
+    #Create Name tag for the VPC
+    Create-NameTag -name $vpcName -resourceID $vpc.VpcId
 
     # Return the VPC
     $vpc = Get-EC2Vpc -VpcId $vpc.VpcId
     return $vpc
     }
 
+    ### Create-InternetGateway
+
+    function Create-InternetGateway {
+        param (
+            [Parameter(Mandatory)] [Amazon.EC2.Model.VPC]$vpc,
+            [Parameter(Mandatory)] [string]$name
+        )
+
+        $igw = New-EC2InternetGateway
+        Add-EC2InternetGateway -InternetGatewayId $igw.InternetGatewayId -VpcId $vpc.VpcId
+
+        Create-NameTag -name $name -resourceID $igw.InternetGatewayId
+        $igw = Get-EC2InternetGateway $igw.InternetGatewayId
+        return $igw
+    }
+
+
+
+
+
+
+    ##### GET FUNCTIONS! #####
 
     ### Get-ResourceByTagValue
 
