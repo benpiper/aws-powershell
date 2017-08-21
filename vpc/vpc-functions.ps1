@@ -31,7 +31,7 @@ function Create-NameTag {
 function Create-RouteTable {
     param (
         [Parameter(Mandatory)] [Amazon.EC2.Model.Vpc]$vpc,
-        [Parameter(Mandatory)] [string]$routeTableName,
+        [Parameter(Mandatory)] [string]$name,
         [Amazon.EC2.Model.Subnet]$subnet
         )
 
@@ -39,13 +39,13 @@ function Create-RouteTable {
     $routeTable = New-EC2RouteTable -VpcId $vpc.VpcId
 
     #Create "Name" tag for the route table
-    Create-NameTag -name $routeTableName -resourceID $routeTable.RouteTableId
+    Create-NameTag -name $name -resourceID $routeTable.RouteTableId
 
     #If subnet specified, register route table with subnet
     if ($subnet) {
         Register-EC2RouteTable -RouteTableId $routeTable.RouteTableId -SubnetId $subnet.SubnetId
     }
-   
+    $routeTable = Get-EC2RouteTable -RouteTableId $routeTable.RouteTableId
     return $routeTable
 }
 
