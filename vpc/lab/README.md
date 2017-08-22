@@ -7,6 +7,11 @@ Follow the scripts in the following order:
 [cloudhub.ps1](cloudhub.ps1)  
 [ipv6.ps1](ipv6.ps1)  
 
+## [lab-setup.ps1](lab-setup.ps1)
+
+Sets AWS credentials from credentials.ps1 file.
+Sets AWS region.
+
 ## [vpc-creation.ps1](vpc-creation.ps1)
 
 Creates two VPCs: one Internet-facing with two subnets (public and private), and another private with a NAT gateway.  
