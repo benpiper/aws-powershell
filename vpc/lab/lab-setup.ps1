@@ -3,8 +3,8 @@
 #Import AWS credentials
 . ./credentials.ps1
 #The credentials file should contain the following two variables:
-#$AWSAccessKey="" # Your access key
-#$AWSSecretKey="" # Your secret key
+# $AWSAccessKey="" # Your access key
+# $AWSSecretKey="" # Your secret key
 
 # Set AWS credentials and region
 $AWSProfileName="aws-networking-deep-dive-vpc"
@@ -21,4 +21,4 @@ Set-DefaultAWSRegion -Region $AWSRegion
 Get-DefaultAWSRegion
 
 # Test functionality
-Get-EC2Vpc
+if ((Get-EC2Vpc).count -ge 1) { Write-Host Connectivity to AWS established! }
