@@ -1,10 +1,10 @@
-﻿# Load functions
-. ./VPC-Functions.ps1
-
-#### OVERVIEW
-### Create webtier VPC
-### Create web1a-public-subnet for internet connectivity
-### Create web1a-private-subnet for private connectivity
+﻿
+### OVERVIEW
+## Create webtier VPC
+## Create web-public subnet for internet connectivity
+## Create web-private subnet for backend database connectivity
+## Create internet gateway
+## Create web server instance
 
 
 ##VPC CREATION SECTION
@@ -17,29 +17,62 @@
 
 $vpcCidr = "10.3.0.0/16"
 $vpcName = "webtier"
-$vpc = Create-VPC -vpcCidr $vpcCidr -vpcName $vpcName
+$vpc = New-EC2Vpc -CidrBlock $vpcCidr -AmazonProvidedIpv6CidrBlock $true
 
 # Verify
+Get-EC2Vpc -VpcId $vpc.VpcId
+
+$tag = New-Object Amazon.EC2.Model.Tag
+$tag.Key = "Name"
+$tag.Value = "webtier"
+$tag
+
+# Attach the tag to the VPC
+New-EC2Tag -Tag $tag -Resource $vpc.VpcId
+
+Refresh $vpc variable
+$vpc = Get-EC2Vpc -VpcId $vpc.VpcId
 $vpc
+#View Name tag
 $vpc | Select-Object -ExpandProperty Tags
-Get-ResourceByTagValue $vpcName
-$vpc
-$vpc.Ipv6CidrBlockAssociationSet
+
 
 ## CREATE PUBLIC SUBNETS IN WEBTIER VPC
-#Create public IPv4 and IPv6 subnets for webtier VPC
+#Create public IPv4 and IPv6 subnets for the webtier VPC
 
-$awszone = "us-east-1a"
-$subnetName = "web1a-public-subnet"
-$subnetIPv4Cidr = "10.3.91.0/24"
-$subnetIPv6prefix = "91"
+$zone = "us-east-1a"
+$subnetName = "web-public"
+$IPv4Cidr = "10.3.1.0/24"
 
-$subnet = Create-Subnet -vpc $vpc -zone $awszone -name $subnetName -IPv4Cidr $subnetIPv4Cidr -IPv6prefix $subnetIPv6prefix
+#The IPv4 CIDR must be a subnet of the VPC's CIDR block
+$vpc.CidrBlock
+
+#Create the subnet with only the IPv4 CIDR
+$subnet = New-EC2Subnet -AvailabilityZone $zone -VpcId $vpc.VpcId -CidrBlock $IPv4Cidr
 
 #Verify
-$subnet
-$subnet.Ipv6CidrBlockAssociationSet
+Get-EC2Subnet -SubnetId $subnet.SubnetId
+
+#IPv6
+$IPv6prefix = "31"
+
+#The IPv6 prefix will replace the last two 00's in the CIDR
 $vpc.Ipv6CidrBlockAssociationSet
+
+#CIDR prefix length is /56 by default, and AWS requires /64 for a subnet
+# Remove the /56 ("Split")
+# Replace the rightmost "00" with the subnet prefix ("Replace")
+# Append a /64
+$IPv6Cidr = ($vpc.Ipv6CidrBlockAssociationSet).IPv6CidrBlock
+$IPv6subnet = ($IPv6Cidr.Split("/")[0]).Replace("00::","$IPv6prefix::") + "/64"
+$IPv6subnet
+
+#Add IPv6 CIDR block association
+Register-EC2SubnetCidrBlock -SubnetId $subnet.SubnetId -Ipv6CidrBlock $IPv6subnet
+
+#Verify
+Get-EC2Subnet -SubnetId $subnet.SubnetId | select-object -ExpandProperty Ipv6CidrBlockAssociationSet
+
 Get-ResourceByTagValue
 
 
@@ -73,13 +106,8 @@ Get-ResourceByTagValue
 
 #Associate subnet with route table
 
-#Create public facing subnet for webtier
-#Name: webtier-public, zone: us-east-2a, subnet: 172.27.10.0/24, ipv6: 10 (match third octet of IPv4 address)
+#Create webserver instance
 
-#Create webtier IGW
-#Name: webtier-igw
-
-#Attach webtier IGW to webtier VPC
 #Modify security group that got created, allow inbound ssh source 0.0.0.0/0
 
 #Create route table for webtier-public subnet
