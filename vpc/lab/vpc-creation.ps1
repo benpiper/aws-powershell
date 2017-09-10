@@ -1,4 +1,6 @@
-﻿
+﻿Write-Warning "This script will modify your AWS account!"
+Pause
+
 ### OVERVIEW
 ## Create webtier VPC
 ## Create web-public subnet for internet connectivity
@@ -73,7 +75,18 @@ Register-EC2SubnetCidrBlock -SubnetId $subnet.SubnetId -Ipv6CidrBlock $IPv6subne
 #Verify
 Get-EC2Subnet -SubnetId $subnet.SubnetId | select-object -ExpandProperty Ipv6CidrBlockAssociationSet
 
-Get-ResourceByTagValue
+#Tag subnet with a friendly Name
+$tag = New-Object Amazon.EC2.Model.Tag
+$tag.Key = "Name"
+$tag.Value = "web-public"
+$tag
+
+# Attach the tag to the VPC
+New-EC2Tag -Tag $tag -Resource $subnet.SubnetId
+
+#Verify
+Get-EC2Subnet -SubnetId $subnet.SubnetId
+
 
 
 #Create webtier VPC Internet gateway
@@ -82,7 +95,9 @@ $igw = Create-InternetGateway -vpc $vpc -name $igwName
 
 #Verify
 $igw
-Get-ResourceByTagValue -keyvalue $igwName
+
+#Tag the IGW
+#Verify
 
 #Create a new route table for webtier-public subnet
 $routeTableName = "webtier-public-routes"
@@ -95,59 +110,38 @@ $routetable
 $routetable.Routes.Count
 $routetable.Routes | ft -Property DestinationCidrBlock,DestinationIpv6CidrBlock,GatewayId,Origin
 
-#Create a default IPv4 route
+#Tag and verify
+
+#Create a default IPv4 route and add to route table
 New-EC2Route -DestinationCidrBlock "0.0.0.0/0" -GatewayId $igw.InternetGatewayId -RouteTableId $routeTable.RouteTableId
 
-#Verify
+#Verify the route
 $routeTable = Get-EC2RouteTable -RouteTableId $routeTable.RouteTableId
 $routetable.Routes | ft -Property DestinationCidrBlock,DestinationIpv6CidrBlock,GatewayId,Origin
 
-Get-ResourceByTagValue
-
 #Associate subnet with route table
+#Register-EC2RouteTable
 
-#Create webserver instance
+#Create security group
 
-#Modify security group that got created, allow inbound ssh source 0.0.0.0/0
+#Create IPpermissions objects to allow ssh, http, https
 
-#Create route table for webtier-public subnet
-#Name: webtier-public
-#Associate subnet with route table
+#Create elastic network interface for public with static IP
 
-#Create key pair
+#Tag as www1-public
 
-#Create web1 instance
-#Launch AWS AMI ami-3883a55d, t2.micro, vpc: webtier, subnet: webtier-public, auto-assign IPv4 and IPv6 addresses, only one nic for now, Name=web1, use webtier-sg security group
+#Allocate elastic IP and tag
 
-#Attempt to connect to instance. It won’t work because default route isn’t there.
+#Associate elastic IP with eth1 ENI (register-ec2address)
 
-#Add default route to webtier-public
-#Connect again, username ec2-user
+#Create elastic network interface for private subnet with private IP
 
-#Create new network interface
-#name: web1-private, subnet: webtier-private
-#Attach to web1 instance
-#Verify that it shows up inside instance
+#Tag as www1-private
 
-#Demonstrate that traffic to internet can be sourced from eth0 (public) but not eth1 (private)
-#Demonstrate IPv4 works but not IPv6
-#Add default route for IPv6
+#Create www1 instance (ami-3883a55d t2.micro)
 
-#create dbtier VPC
-aws ec2 create-vpc --cidr-block 172.28.0.0/16 --amazon-provided-ipv6-cidr-block
-aws ec2 create-tags --resources  --tags Name=dbtier #Key Name must be capitalized!
+#Test SSH and HTTP connectivity. Verify database connection error shows.
 
-#add name to (and if possible, rename) security group to dbtier-sg
+# Create dbtier VPC
 
-#Create private subnet for dbtier
-#Name: dbtier-private, zone: us-east-2a, subnet: 172.28.20.0/24, ipv6: 20 (match third octet of IPv4 address)
-
-#Create route table for dbtier-private subnet
-#Name: dbtier-private
-#Associate subnet with route table
-#Note that there’s no default route, and no route to any other subnets
-
-#Bring up db1 instance
-#Launch AWS AMI ami-3883a55d, t2.micro, vpc: dbtier, subnet: webtier-private, do NOT auto-assign public IPv4 address, DO auto-assign IPv6 address, only one nic for now, Name=db1, use dbtier-sg security group
-
-#db1 has no public IP, but does have a private IP. How do we reach it? From web1!
+## Note: Create www2 using PoSh, then move the EIP to it. When would you move an ENI from one instance to another?
