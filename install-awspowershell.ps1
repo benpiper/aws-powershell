@@ -1,6 +1,4 @@
 
-function Install-AWSPowerShell {
-
     Write-Host "You are using PowerShell $PSEdition!"
 
     # Test PoSh version (core vs full) and respond accordingly
@@ -27,5 +25,3 @@ function Install-AWSPowerShell {
     #NB: Do not install Core module in regular Windows PowerShell! It's not the same thing and won't work.
 
     Get-AWSPowerShellVersion
-
-}
