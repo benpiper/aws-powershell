@@ -1,0 +1,112 @@
+! TRANSIT-CSR CONFIG
+!
+! --------------------------------------------------------------------------------
+! IPSec Tunnel #10 to Charleston
+! --------------------------------------------------------------------------------
+!
+crypto isakmp policy 200
+  encryption aes 128
+  authentication pre-share
+  group 2
+  lifetime 28800
+  hash sha
+exit
+
+! The ISAKMP keyring stores the Pre Shared Key used to authenticate the
+! tunnel endpoints.
+!
+crypto keyring keyring-transit-chs
+	local-address 10.3.0.10
+  pre-shared-key address 24.96.154.172 key 5upre_Secre7_kEey_
+exit
+
+! An ISAKMP profile is used to associate the keyring with the particular
+! endpoint.
+!
+crypto isakmp profile isakmp-transit-chs
+  local-address 10.3.0.10
+  match identity address 24.96.154.172
+  keyring keyring-transit-chs
+exit
+
+! #2: IPSec Configuration
+!
+! The IPSec transform set defines the encryption, authentication, and IPSec
+! mode parameters.
+! Please note, you may use these additionally supported IPSec parameters for encryption like AES256 and other DH groups like 2, 5, 14-18, 22, 23, and 24.
+!
+crypto ipsec transform-set ipsec-prop-transit-chs esp-aes 128 esp-sha-hmac
+  mode tunnel
+exit
+
+! The IPSec profile references the IPSec transform set and further defines
+! the Diffie-Hellman group and security association lifetime.
+!
+crypto ipsec profile ipsec-transit-chs
+  set pfs group2
+  set security-association lifetime seconds 3600
+  set transform-set ipsec-prop-transit-chs
+exit
+
+
+
+! --------------------------------------------------------------------------------
+! #3: Tunnel Interface Configuration
+!
+! A tunnel interface is configured to be the logical interface associated
+! with the tunnel. All traffic routed to the tunnel interface will be
+! encrypted and transmitted to the VPC. Similarly, traffic from the VPC
+! will be logically received on this interface.
+!
+! Association with the IPSec security association is done through the
+! "tunnel protection" command.
+!
+! The address of the interface is configured with the setup for your
+! Customer Gateway.  If the address changes, the Customer Gateway and VPN
+! Connection must be recreated with Amazon VPC.
+!
+interface Tunnel10
+  ip address 192.168.168.1 255.255.255.252
+  ip virtual-reassembly
+  tunnel source 10.3.0.10
+  tunnel destination 24.96.154.172
+  tunnel mode ipsec ipv4
+  tunnel protection ipsec profile ipsec-transit-chs
+  ip tcp adjust-mss 1379
+  no shutdown
+exit
+
+! --------------------------------------------------------------------------------
+
+! #4: Border Gateway Protocol (BGP) Configuration
+!
+! BGP is used within the tunnel to exchange prefixes between the
+! Virtual Private Gateway and your Customer Gateway. The Virtual Private Gateway
+! will announce the prefix corresponding to your VPC.
+!
+! Your Customer Gateway may announce a default route (0.0.0.0/0),
+! which can be done with the 'network' and 'default-originate' statements.
+!
+! The BGP timers are adjusted to provide more rapid detection of outages.
+!
+! The local BGP Autonomous System Number (ASN) (65000) is configured
+! as part of your Customer Gateway. If the ASN must be changed, the
+! Customer Gateway and VPN Connection will need to be recreated with AWS.
+!
+router bgp 65000
+  neighbor 192.168.168.2 remote-as 65000
+  neighbor 192.168.168.2 activate
+  neighbor 192.168.168.2 timers 10 30 30
+  address-family ipv4 unicast
+    neighbor 192.168.168.2 remote-as 65000
+    neighbor 192.168.168.2 timers 10 30 30
+    neighbor 192.168.168.2 default-originate
+    neighbor 192.168.168.2 activate
+    neighbor 192.168.168.2 soft-reconfiguration inbound
+! To advertise additional prefixes to Amazon VPC, copy the 'network' statement
+! and identify the prefix you wish to advertise. Make sure the prefix is present
+! in the routing table of the device with a valid next-hop.
+	network 0.0.0.0
+	redistribute connected
+  exit
+exit
