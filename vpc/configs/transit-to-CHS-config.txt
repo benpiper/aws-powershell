@@ -4,6 +4,8 @@
 ! IPSec Tunnel #10 to Charleston
 ! --------------------------------------------------------------------------------
 !
+! Change all occurrences of 24.96.154.172 to YOUR on-prem router's public IP
+!
 crypto isakmp policy 200
   encryption aes 128
   authentication pre-share
