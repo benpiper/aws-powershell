@@ -22,7 +22,6 @@ Pause
 ## CREATE WEBTIER VPC
 
 $vpcCidr = "10.3.0.0/16"
-$vpcName = "webtier"
 $vpc = New-EC2Vpc -CidrBlock $vpcCidr -AmazonProvidedIpv6CidrBlock $true
 
 # Verify
@@ -47,7 +46,6 @@ $vpc | Select-Object -ExpandProperty Tags
 #Create public IPv4 and IPv6 subnets for the webtier VPC
 
 $zone = "us-east-1a"
-$subnetName = "web-public"
 $IPv4Cidr = "10.3.1.0/24"
 
 #The IPv4 CIDR must be a subnet of the VPC's CIDR block
