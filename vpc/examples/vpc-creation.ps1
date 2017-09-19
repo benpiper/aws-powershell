@@ -11,8 +11,12 @@ Pause
 
 ##VPC CREATION SECTION
 #Module name: Creating Secure Virtual Private Clouds (VPCs)
-#Topics covered: VPC creation, ipv4 and ipv6 subnet creation, ipv4 routing tables, internet gateways and default routes, adding secondary network interfaces, launching instances, security groups
-#Scenario: Create an internet facing web server instance with two virtual NICs, one facing the public internet and another on a private subnet to connect to a database server in a different VPC that we’ll create later. Must be IPv6 ready.
+#Topics covered: VPC creation, ipv4 and ipv6 subnet creation, ipv4 routing
+#tables, internet gateways and default routes, adding secondary network
+#interfaces, launching instances, security groups
+#Scenario: Create an internet facing web server instance with two virtual NICs,
+#one facing the public internet and another on a private subnet to connect to
+#a database server in a different VPC that we’ll create later. Must be IPv6 ready.
 
 
 ## CREATE WEBTIER VPC
