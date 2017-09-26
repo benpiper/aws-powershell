@@ -4,10 +4,9 @@ aws-powershell
 ### PowerShell Core: it's not just for Windows anymore!
 
 #### AWS PowerShell SDK setup:
-If you don't already have the AWS PowerShell SDK installed, [Install-AWSPowerShell.ps1](Install-AWSPowerShell.ps1) has got you covered. It will detect your PowerShell edition (Desktop or Core) and install and import the appropriate AWS PowerShell module.
+If you don't already have the AWS PowerShell SDK installed, [install-awspowershell.ps1](install-awspowershell.ps1) has got you covered. It will detect your PowerShell edition (Desktop or Core) and install and import the appropriate AWS PowerShell module.
 ```
-. ./Install-AWSPowerShell.ps1
-Install-AWSPowerShell
+. ./install-awspowershell.ps1
 ```
 I recommend using [Visual Studio Code with the PowerShell extension](https://benpiper.com/2017/08/visual-studio-code-as-a-powershell-integrated-scripting-environment/). It works on Linux, Mac, and Windows!
 
