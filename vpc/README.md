@@ -1,1 +1,1 @@
-lab-setup.ps1 - Refer to lab-setup.md for instructions
+[lab-setup.ps1](lab-setup.ps1) - Refer to lab-setup.md for instructions
