@@ -2,7 +2,7 @@
 Pause
 
 ### OVERVIEW
-## Create webt VPC
+## Create web VPC
 ## Create web-pub subnet for internet connectivity
 ## Create internet gateway
 ## Create web server instance
@@ -156,10 +156,20 @@ $eni = New-EC2NetworkInterface -SubnetId $subnet.SubnetId -Description $desc -Pr
 #Allocate elastic IP
 
 $eip = New-EC2Address
+
+#Associate elastic IP with www1 eth0 ENI
 Register-EC2Address -AllocationId $eip.AllocationId -NetworkInterfaceId $eni.NetworkInterfaceId
 
-#Associate elastic IP with eth1 ENI (register-ec2address)
-
 #Create www1 instance (ami-3883a55d t2.micro)
+$ami = "ami-d61027ad"
+$keyname = "ccnetkeypair"
+$itype = "t2.micro"
+
+$eth0 = new-object Amazon.EC2.Model.InstanceNetworkInterfaceSpecification
+$eth0.NetworkInterfaceId = $eni.NetworkInterfaceId
+$eth0.DeviceIndex = 0
+$eth0.DeleteOnTermination = $true
+$www1 = New-EC2Instance -ImageId $ami -KeyName $keyname -InstanceType $itype -NetworkInterface $eth0
 
 #Test SSH
+
