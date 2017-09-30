@@ -86,9 +86,7 @@ New-EC2Tag -Tag $tag -Resource $subnet.SubnetId
 #Verify
 Get-EC2Subnet -SubnetId $subnet.SubnetId
 
-
-
-#Create webtier VPC Internet gateway
+#Create web-vpc Internet gateway
 $igwName = "web-igw"
 $igw = New-EC2InternetGateway
 Add-EC2InternetGateway -InternetGatewayId $igw.InternetGatewayId -VpcId $vpc.VpcId
@@ -101,7 +99,6 @@ New-EC2Tag -Tag $tag -Resource $igw.InternetGatewayId
 
 #Verify
 $igw
-
 
 #Create a new route table for webtier-public subnet
 $routeTableName = "web-pub"
@@ -168,7 +165,7 @@ $itype = "t2.micro"
 $eth0 = new-object Amazon.EC2.Model.InstanceNetworkInterfaceSpecification
 $eth0.NetworkInterfaceId = $eni.NetworkInterfaceId
 $eth0.DeviceIndex = 0
-$eth0.DeleteOnTermination = $true
+$eth0.DeleteOnTermination = $false
 $www1 = New-EC2Instance -ImageId $ami -KeyName $keyname -InstanceType $itype -NetworkInterface $eth0
 
 #Test SSH
