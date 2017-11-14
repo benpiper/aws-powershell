@@ -2,7 +2,7 @@
 # Ben Piper
 # ben@benpiper.com
 
-#TODO: Reference helpers.ps1 for new-nametag function
+. ../helpers.ps1
 
 ### Create-RouteTable
 
@@ -20,7 +20,7 @@ function Create-RouteTable {
     $routeTable = New-EC2RouteTable -VpcId $vpc.VpcId
 
     #Create "Name" tag for the route table
-    Create-NameTag -name $name -resourceID $routeTable.RouteTableId
+    New-NameTag -name $name -resourceID $routeTable.RouteTableId
 
     #If subnet specified, register route table with subnet
     if ($subnet) {
@@ -69,7 +69,7 @@ function Create-Subnet {
     $subnet = New-EC2Subnet -AvailabilityZone $zone -VpcId $vpc.VpcId -CidrBlock $IPv4CIDR -Ipv6CidrBlock $IPv6subnet
 
     #Create Name tag for the subnet
-    Create-NameTag -name $name -resourceID $subnet.SubnetId
+    New-NameTag -name $name -resourceID $subnet.SubnetId
     
     # Return the subnet
     $subnet = get-ec2subnet -SubnetId $subnet.SubnetId
@@ -93,7 +93,7 @@ function Create-VPC {
     $vpc = New-EC2Vpc -CidrBlock $vpcCidr -AmazonProvidedIpv6CidrBlock $true
 
     #Create Name tag for the VPC
-    Create-NameTag -name $vpcName -resourceID $vpc.VpcId
+    New-NameTag -name $vpcName -resourceID $vpc.VpcId
 
     # Return the VPC
     $vpc = Get-EC2Vpc -VpcId $vpc.VpcId
@@ -111,7 +111,7 @@ function Create-VPC {
         $igw = New-EC2InternetGateway
         Add-EC2InternetGateway -InternetGatewayId $igw.InternetGatewayId -VpcId $vpc.VpcId
 
-        Create-NameTag -name $name -resourceID $igw.InternetGatewayId
+        New-NameTag -name $name -resourceID $igw.InternetGatewayId
         $igw = Get-EC2InternetGateway $igw.InternetGatewayId
         return $igw
     }
