@@ -38,18 +38,18 @@ $app1a = Create-Subnet -vpc $vpc -zone "us-east-1a" -name "app-1a" -IPv4Cidr "17
 $app1b = Create-Subnet -vpc $vpc -zone "us-east-1b" -name "app-1b" -IPv4Cidr "172.31.102.0/24" -IPv6prefix "02"
 
 # Create internet gateway
-$igw = Create-InternetGateway -vpc $vpc.vpcId -name "webapp-igw"
+$igw = Create-InternetGateway -vpc $vpc -name "webapp-igw"
 
 # Create route table and associate with subnets
-$rt = Create-RouteTable -vpc $vpc.vpcId -name "webapp-rt"
+$rt = Create-RouteTable -vpc $vpc -name "webapp-rt"
 Register-EC2RouteTable -RouteTableId $rt.RouteTableId -SubnetId $web1a.SubnetId
 Register-EC2RouteTable -RouteTableId $rt.RouteTableId -SubnetId $web1b.SubnetId
 Register-EC2RouteTable -RouteTableId $rt.RouteTableId -SubnetId $app1a.SubnetId
 Register-EC2RouteTable -RouteTableId $rt.RouteTableId -SubnetId $app1b.SubnetId
 
 # Add default routes
-New-EC2Route -DestinationCidrBlock "0.0.0.0/0" -GatewayId $igw -RouteTableId $rt.RouteTableId
-New-EC2Route -DestinationIpv6CidrBlock "::0/0" -GatewayId $igw -RouteTableId $rt.RouteTableId
+New-EC2Route -DestinationCidrBlock "0.0.0.0/0" -GatewayId $igw.InternetGatewayId -RouteTableId $rt.RouteTableId
+New-EC2Route -DestinationIpv6CidrBlock "::0/0" -GatewayId $igw.InternetGatewayId -RouteTableId $rt.RouteTableId
 
 #Create security groups
 $websg = New-EC2SecurityGroup -VpcId $vpc.VpcId -GroupName "web-sg" -GroupDescription "web-sg"
@@ -66,11 +66,14 @@ $httpip.IpRanges.Add("0.0.0.0/0")
 $httpsip = new-object Amazon.EC2.Model.IpPermission
 $httpsip.IpProtocol = "tcp"
 $httpsip.FromPort = 443
-$httpsip.ToPort = 43
+$httpsip.ToPort = 443
 $httpsip.IpRanges.Add("0.0.0.0/0")
 
-Grant-EC2SecurityGroupIngress -GroupId $websg -IpPermissions @( $httpip, $httpsip )
-Grant-EC2SecurityGroupIngress -GroupId $appsg -IpPermissions @( $httpip, $httpsip )
+$sship = new-object Amazon.EC2.Model.IpPermission
+$sship.IpProtocol = "tcp"
+$sship.FromPort = 22
+$sship.ToPort = 22
+$sship.IpRanges.Add("24.96.154.171/32")
 
 #Create IPpermissions for DB tier
 $dbip = new-object Amazon.EC2.Model.IpPermission
@@ -80,22 +83,32 @@ $dbip.ToPort = 3306
 $dbip.IpRanges.Add("172.31.101.0/24")
 $dbip.IpRanges.Add("172.31.102.0/24")
 
-Grant-EC2SecurityGroupIngress -GroupId $dbsg -IpPermissions @( $dbip )
+Grant-EC2SecurityGroupIngress -GroupId $websg -IpPermissions @( $httpip, $httpsip, $sship )
+Grant-EC2SecurityGroupIngress -GroupId $appsg -IpPermissions @( $httpip, $httpsip, $sship )
+Grant-EC2SecurityGroupIngress -GroupId $dbsg -IpPermissions @( $dbip, $sship )
 
 # Create web instances
 $ami = "ami-c710e7bd" # aws-elasticbeanstalk-amzn-2017.03.1.x86_64-ecs-hvm-201709251832
 $keyname = "ccnetkeypair"
 $itype = "t2.micro"
 
-$web1 = New-EC2Instance -ImageId $ami -KeyName $keyname -InstanceType $itype -SubnetId $web1a.SubnetId -SecurityGroup $websg
-$web2 = New-EC2Instance -ImageId $ami -KeyName $keyname -InstanceType $itype -SubnetId $web1b.SubnetId -SecurityGroup $websg
-$web3 = New-EC2Instance -ImageId $ami -KeyName $keyname -InstanceType $itype -SubnetId $web1b.SubnetId -SecurityGroup $websg
+$web1 = New-EC2Instance -ImageId $ami -KeyName $keyname -InstanceType $itype -SubnetId $web1a.SubnetId -SecurityGroupId $websg -AssociatePublicIp $true -PrivateIpAddress "172.31.1.21"
+$web2 = New-EC2Instance -ImageId $ami -KeyName $keyname -InstanceType $itype -SubnetId $web1b.SubnetId -SecurityGroupId $websg -AssociatePublicIp $true -PrivateIpAddress "172.31.2.22"
+$web3 = New-EC2Instance -ImageId $ami -KeyName $keyname -InstanceType $itype -SubnetId $web1b.SubnetId -SecurityGroupId $websg -AssociatePublicIp $true -PrivateIpAddress "172.31.2.23"
+
+New-NameTag -name "web1" -resourceID $web1.Instances.InstanceId
+New-NameTag -name "web2" -resourceID $web2.Instances.InstanceId
+New-NameTag -name "web3" -resourceID $web3.Instances.InstanceId
 
 # Create application server instances
-$app1 = New-EC2Instance -ImageId $ami -KeyName $keyname -InstanceType $itype -SubnetId $app1a.SubnetId -SecurityGroup $appsg
-$app2 = New-EC2Instance -ImageId $ami -KeyName $keyname -InstanceType $itype -SubnetId $app1b.SubnetId -SecurityGroup $appsg
-$app3 = New-EC2Instance -ImageId $ami -KeyName $keyname -InstanceType $itype -SubnetId $app1b.SubnetId -SecurityGroup $appsg
+$app1 = New-EC2Instance -ImageId $ami -KeyName $keyname -InstanceType $itype -SubnetId $app1a.SubnetId -SecurityGroupId $appsg -AssociatePublicIp $true -PrivateIpAddress "172.31.101.21"
+$app2 = New-EC2Instance -ImageId $ami -KeyName $keyname -InstanceType $itype -SubnetId $app1b.SubnetId -SecurityGroupId $appsg -AssociatePublicIp $true -PrivateIpAddress "172.31.102.22"
+$app3 = New-EC2Instance -ImageId $ami -KeyName $keyname -InstanceType $itype -SubnetId $app1b.SubnetId -SecurityGroupId $appsg -AssociatePublicIp $true -PrivateIpAddress "172.31.102.23"
+
+New-NameTag -name "app1" -resourceID $app1.Instances.InstanceId
+New-NameTag -name "app2" -resourceID $app2.Instances.InstanceId
+New-NameTag -name "app3" -resourceID $app3.Instances.InstanceId
 
 # Create db instance
-$db = New-EC2Instance -ImageId $ami -KeyName $keyname -InstanceType $itype -SubnetId $app1a.SubnetId -SecurityGroup $dbsg
-
+$db = New-EC2Instance -ImageId $ami -KeyName $keyname -InstanceType $itype -SubnetId $app1a.SubnetId -SecurityGroupId $dbsg -AssociatePublicIp $true -PrivateIpAddress "172.31.101.99"
+New-NameTag -name "db" -resourceID $db.Instances.InstanceId
