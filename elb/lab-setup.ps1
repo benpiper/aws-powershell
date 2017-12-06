@@ -75,6 +75,15 @@ $sship.FromPort = 22
 $sship.ToPort = 22
 $sship.IpRanges.Add("24.96.154.171/32")
 
+#Create IPpermissions for app tier
+#Create IPpermissions for public http and https
+$appip = new-object Amazon.EC2.Model.IpPermission
+$appip.IpProtocol = "tcp"
+$appip.FromPort = 8080
+$appip.ToPort = 8080
+$appip.IpRanges.Add("172.31.101.0/24")
+$appip.IpRanges.Add("172.31.102.0/24")
+
 #Create IPpermissions for DB tier
 $dbip = new-object Amazon.EC2.Model.IpPermission
 $dbip.IpProtocol = "tcp"
@@ -84,7 +93,7 @@ $dbip.IpRanges.Add("172.31.101.0/24")
 $dbip.IpRanges.Add("172.31.102.0/24")
 
 Grant-EC2SecurityGroupIngress -GroupId $websg -IpPermissions @( $httpip, $httpsip, $sship )
-Grant-EC2SecurityGroupIngress -GroupId $appsg -IpPermissions @( $httpip, $httpsip, $sship )
+Grant-EC2SecurityGroupIngress -GroupId $appsg -IpPermissions @( $appip, $sship )
 Grant-EC2SecurityGroupIngress -GroupId $dbsg -IpPermissions @( $dbip, $sship )
 
 # Create web instances
