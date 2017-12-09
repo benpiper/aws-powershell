@@ -9,6 +9,12 @@
 # Set AWS credentials and region
 $AWSProfileName="aws-networking-deep-dive-elb"
 $AWSRegion = "us-east-1"
+# Set your IP subnet for SSH access
+$myIP = "24.96.154.171/32"
+# Set the AMI image (change this if you change the region)
+$ami = "ami-c710e7bd" # aws-elasticbeanstalk-amzn-2017.03.1.x86_64-ecs-hvm-201709251832
+# Set the name of your SSH keypair
+$keyname = "ccnetkeypair"
 
 # Set AWS credentials and store them
 Set-AWSCredential -AccessKey $AWSAccessKey -SecretKey $AWSSecretKey -StoreAs $AWSProfileName
@@ -73,7 +79,13 @@ $sship = new-object Amazon.EC2.Model.IpPermission
 $sship.IpProtocol = "tcp"
 $sship.FromPort = 22
 $sship.ToPort = 22
-$sship.IpRanges.Add("24.96.154.171/32")
+$sship.IpRanges.Add($myIP)
+
+$tcp81ip = new-object Amazon.EC2.Model.IpPermission
+$tcp81ip.IpProtocol = "tcp"
+$tcp81ip.FromPort = 81
+$tcp81ip.ToPort = 81
+$tcp81ip.IpRanges.Add("172.31.0.0/16")
 
 #Create IPpermissions for app tier
 #Create IPpermissions for public http and https
@@ -81,8 +93,15 @@ $appip = new-object Amazon.EC2.Model.IpPermission
 $appip.IpProtocol = "tcp"
 $appip.FromPort = 8080
 $appip.ToPort = 8080
-$appip.IpRanges.Add("172.31.101.0/24")
-$appip.IpRanges.Add("172.31.102.0/24")
+$appip.IpRanges.Add("172.31.1.0/24")
+$appip.IpRanges.Add("172.31.2.0/24")
+
+$appsip = new-object Amazon.EC2.Model.IpPermission
+$appsip.IpProtocol = "tcp"
+$appsip.FromPort = 8443
+$appsip.ToPort = 8443
+$appsip.IpRanges.Add("172.31.1.0/24")
+$appsip.IpRanges.Add("172.31.2.0/24")
 
 #Create IPpermissions for DB tier
 $dbip = new-object Amazon.EC2.Model.IpPermission
@@ -92,14 +111,12 @@ $dbip.ToPort = 3306
 $dbip.IpRanges.Add("172.31.101.0/24")
 $dbip.IpRanges.Add("172.31.102.0/24")
 
-Grant-EC2SecurityGroupIngress -GroupId $websg -IpPermissions @( $httpip, $httpsip, $sship )
-Grant-EC2SecurityGroupIngress -GroupId $appsg -IpPermissions @( $appip, $sship )
+Grant-EC2SecurityGroupIngress -GroupId $websg -IpPermissions @( $httpip, $httpsip, $tcp81ip, $sship )
+Grant-EC2SecurityGroupIngress -GroupId $appsg -IpPermissions @( $appip, $appsip, $sship )
 Grant-EC2SecurityGroupIngress -GroupId $dbsg -IpPermissions @( $dbip, $sship )
 
 # Create web instances
-$ami = "ami-c710e7bd" # aws-elasticbeanstalk-amzn-2017.03.1.x86_64-ecs-hvm-201709251832
-$keyname = "ccnetkeypair"
-$itype = "t2.micro"
+$itype = "t2.nano"
 
 $web1 = New-EC2Instance -ImageId $ami -KeyName $keyname -InstanceType $itype -SubnetId $web1a.SubnetId -SecurityGroupId $websg -AssociatePublicIp $true -PrivateIpAddress "172.31.1.21"
 $web2 = New-EC2Instance -ImageId $ami -KeyName $keyname -InstanceType $itype -SubnetId $web1b.SubnetId -SecurityGroupId $websg -AssociatePublicIp $true -PrivateIpAddress "172.31.2.22"
