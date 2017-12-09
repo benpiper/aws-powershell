@@ -34,6 +34,7 @@ if ((Get-EC2Vpc).count -ge 1) { Write-Host Connectivity to AWS established! }
 
 # Create webapp-vpc
 $vpc = Create-VPC -vpcCidr "172.31.0.0/16" -vpcName "webapp-vpc"
+Edit-EC2VpcAttribute -VpcId $vpc.VpcId -EnableDnsHostnames $true
 
 # Create web tier subnets
 $web1a = Create-Subnet -vpc $vpc -zone "us-east-1a" -name "web-1a" -IPv4Cidr "172.31.1.0/24" -IPv6prefix "11"
