@@ -16,9 +16,9 @@ Set-AWSCredential -AccessKey $AWSAccessKey -SecretKey $AWSSecretKey -StoreAs $AW
 # Load the credentials for this session
 Set-AWSCredential -ProfileName $AWSProfileName
 
-# Set the default region
-Set-DefaultAWSRegion -Region $AWSRegion
-Get-DefaultAWSRegion
+# Route 53 is not region-specific, so we won't set a default region
+#Set-DefaultAWSRegion -Region $AWSRegion
+#Get-DefaultAWSRegion
 
 # Test functionality
-if ((Get-EC2Vpc).count -ge 1) { Write-Host Connectivity to AWS established! }
+if ((Get-EC2Vpc -Region $AWSRegion).count -ge 1) { Write-Host Connectivity to AWS established! }
