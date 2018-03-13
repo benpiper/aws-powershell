@@ -1,5 +1,10 @@
+$zonename = "benpiper.host."
+$isprivate = $false
+
+$zone = Get-R53HostedZones | where { $_.name -like $zonename -and $_.Config.PrivateZone -like $isprivate}
+
 # Get list of record sets
-$rrsetlist = Get-R53ResourceRecordSet -HostedZoneId $zone.HostedZone.Id
+$rrsetlist = Get-R53ResourceRecordSet -HostedZoneId $zone.Id
 
 # Display resource record sets
 $rrsetlist.ResourceRecordSets | Format-Table
@@ -25,7 +30,7 @@ New-TimeSpan -Seconds 1209600 | Format-Table
 New-TimeSpan -Seconds 86400 | Format-Table
 
 # Remove hosted zone
-Remove-R53HostedZone -id $zone.HostedZone.Id -Force
+Remove-R53HostedZone -id $zone.Id -Force
 
 # Remove reusable delegation set
 

@@ -14,12 +14,13 @@ Set-AWSCredential -AccessKey $AWSAccessKey -SecretKey $AWSSecretKey -StoreAs $AW
 
 # Load the credentials for this session
 Set-AWSCredential -ProfileName $AWSProfileName
-# Create a reusable delegation set and create a public hosted zone that uses it
 
+# Create a reusable delegation set and create a public hosted zone that uses it
 $zonename = "benpiper.host."
 
 # Create reusable delegation set
 $delegationset = New-R53ReusableDelegationSet -CallerReference (Get-Random)
+Get-R53ReusableDelegationSets
 
 # View nameservers
 $delegationset.DelegationSet | Format-List
