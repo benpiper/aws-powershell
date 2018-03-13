@@ -1,3 +1,19 @@
+# reusable-delegation-set.ps1
+
+#Import AWS credentials
+. ./credentials.ps1
+#The credentials file should contain the following two variables:
+# $AWSAccessKey="" # Your access key
+# $AWSSecretKey="" # Your secret key
+
+# Set AWS credentials and region
+$AWSProfileName="aws-networking-deep-dive-route-53-dns"
+
+# Set AWS credentials and store them
+Set-AWSCredential -AccessKey $AWSAccessKey -SecretKey $AWSSecretKey -StoreAs $AWSProfileName
+
+# Load the credentials for this session
+Set-AWSCredential -ProfileName $AWSProfileName
 # Create a reusable delegation set and create a public hosted zone that uses it
 
 $zonename = "benpiper.host."
