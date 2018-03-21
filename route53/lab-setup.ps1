@@ -53,6 +53,9 @@ Set-AWSCredential -ProfileName $AWSProfileName
     # Create vpc
     $vpc = Create-VPC -vpcCidr "172.3.0.0/16" -vpcName "r53-lab-vpc"
 
+    # Enable DNS hostnames
+    Edit-EC2VpcAttribute -VpcId $vpc.VpcId -EnableDnsHostnames $true
+
     # Create subnet
     $subnet = Create-Subnet -vpc $vpc -zone "$($AWSRegionA)a" -name "r53-lab-1a" -IPv4Cidr "172.3.0.0/24" -IPv6Prefix "00"
 
@@ -168,6 +171,9 @@ Set-AWSCredential -ProfileName $AWSProfileName
 
     # Create vpc
     $vpc = Create-VPC -vpcCidr "172.9.0.0/16" -vpcName "r53-lab-vpc"
+
+    # Enable DNS hostnames
+    Edit-EC2VpcAttribute -VpcId $vpc.VpcId -EnableDnsHostnames $true
 
     # Create subnet
     $subnet = Create-Subnet -vpc $vpc -zone "$($AWSRegionB)a" -name "r53-lab-1a" -IPv4Cidr "172.9.0.0/24" -IPv6Prefix "00"
