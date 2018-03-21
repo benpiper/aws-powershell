@@ -26,3 +26,9 @@ $instances | ForEach-Object {
 }
 
 $sessions | Sort-Object -Property IP | Select-Object -Property Name,IP,URL
+
+$sessions | ForEach-Object {
+    $csvline += "$($_.Name),$($_.IP)`n"
+}
+
+$csvline | Out-File ./instance-eip.csv
