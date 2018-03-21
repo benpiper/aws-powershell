@@ -1,14 +1,10 @@
-# Lab-Setup.ps1
-
+# lab-setup.ps1
 
 # Import VPC helper functions
 . ./vpc-functions.ps1
 
 #Import AWS credentials
 . ./credentials.ps1
-
-# Set AWS credentials
-$AWSProfileName="aws-networking-deep-dive-route-53-dns"
 
 # Set region-specific settings
 $AWSRegionA = "us-east-1"
@@ -33,6 +29,9 @@ Get-EC2KeyPair -Region $AWSRegionB
 
 # Set instance type
 $itype = "t2.nano"
+
+# Set AWS credentials
+$AWSProfileName="aws-networking-deep-dive-route-53-dns"
 
 # Set AWS credentials and store them
 Set-AWSCredential -AccessKey $AWSAccessKey -SecretKey $AWSSecretKey -StoreAs $AWSProfileName
