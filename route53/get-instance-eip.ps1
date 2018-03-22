@@ -32,3 +32,5 @@ $sessions | ForEach-Object {
 }
 
 $csvline | Out-File ./instance-eip.csv
+
+Remove-Variable csvline,sessions,instances
