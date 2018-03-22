@@ -3,9 +3,6 @@
 #Import AWS credentials
 . ./credentials.ps1
 
-# Create a reusable delegation set and create a public hosted zone that uses it
-$zonename = "benpiper.host."
-
 # Create reusable delegation set
 $delegationset = New-R53ReusableDelegationSet -CallerReference (Get-Random)
 Get-R53ReusableDelegationSets
@@ -16,7 +13,10 @@ $delegationset.DelegationSet | Format-List
 # Get delegation set ID
 $dsid = $delegationset.DelegationSet.Id
 
-# Create hosted zone
+# Configure zone name
+$zonename = "benpiper.host."
+
+# Create public hosted zone
 $zone = New-R53HostedZone -Name $zonename -DelegationSetId $dsid -CallerReference (Get-Random)
 
 # View zone properties
