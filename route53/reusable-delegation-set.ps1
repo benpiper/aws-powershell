@@ -26,3 +26,6 @@ $zone.HostedZone
 $firstns = $zone.DelegationSet.NameServers[0]
 $firstns
 nslookup -type=any $zonename $firstns
+
+# View nameservers only
+$zone.DelegationSet.NameServers
