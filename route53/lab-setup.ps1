@@ -55,15 +55,17 @@ Set-AWSCredential -ProfileName $AWSProfileName
     # Enable DNS hostnames
     Edit-EC2VpcAttribute -VpcId $vpc.VpcId -EnableDnsHostnames $true
 
-    # Create subnet
-    $subnet = Create-Subnet -vpc $vpc -zone "$($AWSRegionA)a" -name "r53-lab-1a" -IPv4Cidr "172.3.0.0/24" -IPv6Prefix "00"
+    # Create subnets
+    $subnet1a = Create-Subnet -vpc $vpc -zone "$($AWSRegionA)a" -name "r53-lab-1a" -IPv4Cidr "172.3.0.0/24" -IPv6Prefix "30"
+    $subnet1b = Create-Subnet -vpc $vpc -zone "$($AWSRegionA)b" -name "r53-lab-1b" -IPv4Cidr "172.3.1.0/24" -IPv6Prefix "31"
 
     # Create internet gateway
     $igw = Create-InternetGateway -vpc $vpc -name "r53-lab-igw"
 
-    # Create route table and associate with subnet
+    # Create route table and associate with subnets
     $rt = Create-RouteTable -vpc $vpc -name "r53-lab-rt"
-    Register-EC2RouteTable -RouteTableId $rt.RouteTableId -SubnetId $subnet.SubnetId
+    Register-EC2RouteTable -RouteTableId $rt.RouteTableId -SubnetId $subnet1a.SubnetId
+    Register-EC2RouteTable -RouteTableId $rt.RouteTableId -SubnetId $subnet1b.SubnetId
 
     # Add default routes
     New-EC2Route -DestinationCidrBlock "0.0.0.0/0" -GatewayId $igw.InternetGatewayId -RouteTableId $rt.RouteTableId
@@ -98,7 +100,7 @@ Set-AWSCredential -ProfileName $AWSProfileName
         # Create elastic network interface
         $primary = "172.3.0.10"
         $desc = "web1-east eth0"
-        $eni = New-EC2NetworkInterface -SubnetId $subnet.SubnetId -Description $desc -PrivateIPAddress $primary -Group $sg
+        $eni = New-EC2NetworkInterface -SubnetId $subnet1a.SubnetId -Description $desc -PrivateIPAddress $primary -Group $sg
 
         # Allocate elastic IP
         $eip = New-EC2Address
@@ -118,9 +120,9 @@ Set-AWSCredential -ProfileName $AWSProfileName
     ## Create web2-east instance
 
         # Create elastic network interface
-        $primary = "172.3.0.20"
+        $primary = "172.3.1.20"
         $desc = "web2-east eth0"
-        $eni = New-EC2NetworkInterface -SubnetId $subnet.SubnetId -Description $desc -PrivateIPAddress $primary -Group $sg
+        $eni = New-EC2NetworkInterface -SubnetId $subnet1b.SubnetId -Description $desc -PrivateIPAddress $primary -Group $sg
 
         # Allocate elastic IP
         $eip = New-EC2Address
@@ -140,9 +142,9 @@ Set-AWSCredential -ProfileName $AWSProfileName
     ## Create db-east instance
 
         # Create elastic network interface
-        $primary = "172.3.0.100"
+        $primary = "172.3.1.100"
         $desc = "db-east eth0"
-        $eni = New-EC2NetworkInterface -SubnetId $subnet.SubnetId -Description $desc -PrivateIPAddress $primary -Group $sg
+        $eni = New-EC2NetworkInterface -SubnetId $subnet1b.SubnetId -Description $desc -PrivateIPAddress $primary -Group $sg
 
         # Allocate elastic IP
         $eip = New-EC2Address
@@ -174,15 +176,17 @@ Set-AWSCredential -ProfileName $AWSProfileName
     # Enable DNS hostnames
     Edit-EC2VpcAttribute -VpcId $vpc.VpcId -EnableDnsHostnames $true
 
-    # Create subnet
-    $subnet = Create-Subnet -vpc $vpc -zone "$($AWSRegionB)a" -name "r53-lab-1a" -IPv4Cidr "172.9.0.0/24" -IPv6Prefix "00"
+    # Create subnets
+    $subnet1a = Create-Subnet -vpc $vpc -zone "$($AWSRegionB)a" -name "r53-lab-1a" -IPv4Cidr "172.9.0.0/24" -IPv6Prefix "90"
+    $subnet1b = Create-Subnet -vpc $vpc -zone "$($AWSRegionB)b" -name "r53-lab-1b" -IPv4Cidr "172.9.1.0/24" -IPv6Prefix "91"
 
     # Create internet gateway
     $igw = Create-InternetGateway -vpc $vpc -name "r53-lab-igw"
 
-    # Create route table and associate with subnet
+    # Create route table and associate with subnets
     $rt = Create-RouteTable -vpc $vpc -name "r53-lab-rt"
-    Register-EC2RouteTable -RouteTableId $rt.RouteTableId -SubnetId $subnet.SubnetId
+    Register-EC2RouteTable -RouteTableId $rt.RouteTableId -SubnetId $subnet1a.SubnetId
+    Register-EC2RouteTable -RouteTableId $rt.RouteTableId -SubnetId $subnet1b.SubnetId
 
     # Add default routes
     New-EC2Route -DestinationCidrBlock "0.0.0.0/0" -GatewayId $igw.InternetGatewayId -RouteTableId $rt.RouteTableId
@@ -217,7 +221,7 @@ Set-AWSCredential -ProfileName $AWSProfileName
         # Create elastic network interface
         $primary = "172.9.0.10"
         $desc = "web1-west eth0"
-        $eni = New-EC2NetworkInterface -SubnetId $subnet.SubnetId -Description $desc -PrivateIPAddress $primary -Group $sg
+        $eni = New-EC2NetworkInterface -SubnetId $subnet1a.SubnetId -Description $desc -PrivateIPAddress $primary -Group $sg
 
         # Allocate elastic IP
         $eip = New-EC2Address
@@ -237,9 +241,9 @@ Set-AWSCredential -ProfileName $AWSProfileName
     ## Create web2-west instance
 
         # Create elastic network interface
-        $primary = "172.9.0.20"
+        $primary = "172.9.1.20"
         $desc = "web2-west eth0"
-        $eni = New-EC2NetworkInterface -SubnetId $subnet.SubnetId -Description $desc -PrivateIPAddress $primary -Group $sg
+        $eni = New-EC2NetworkInterface -SubnetId $subnet1b.SubnetId -Description $desc -PrivateIPAddress $primary -Group $sg
 
         # Allocate elastic IP
         $eip = New-EC2Address
