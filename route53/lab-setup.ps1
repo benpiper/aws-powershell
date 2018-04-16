@@ -24,8 +24,8 @@ $regionAKeyname = "ccnetkeypair"
 $regionBKeyname = "ccnetkeypair"
 
 # Get existing keypairs
-Get-EC2KeyPair -Region $AWSRegionA
-Get-EC2KeyPair -Region $AWSRegionB
+Get-EC2KeyPair -Region "us-east-1"
+Get-EC2KeyPair -Region "us-west-1"
 
 # Set instance type
 $itype = "t2.nano"
