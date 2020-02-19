@@ -5,7 +5,7 @@
 ! --------------------------------------------------------------------------------
 !
 ! Change all occurrences of 34.235.44.38 to YOUR transit router's EIP
-! Change all occurrences of 24.96.154.172 to YOUR on-prem router's public IP
+! Change all occurrences of x.x.x.x to YOUR on-prem router's public IP
 !
 crypto isakmp policy 200
   encryption aes 128
@@ -19,7 +19,7 @@ exit
 ! tunnel endpoints.
 !
 crypto keyring keyring-transit-chs
-	local-address 24.96.154.172
+	local-address x.x.x.x
   pre-shared-key address 34.235.44.38 key 5upre_Secre7_kEey_
 exit
 
@@ -27,7 +27,7 @@ exit
 ! endpoint.
 !
 crypto isakmp profile isakmp-transit-chs
-  local-address 24.96.154.172
+  local-address x.x.x.x
   match identity address 34.235.44.38
   keyring keyring-transit-chs
 exit
@@ -71,7 +71,7 @@ exit
 interface Tunnel10
   ip address 192.168.168.2 255.255.255.252
   ip virtual-reassembly
-  tunnel source 24.96.154.172
+  tunnel source x.x.x.x
   tunnel destination 34.235.44.38
   tunnel mode ipsec ipv4
   tunnel protection ipsec profile ipsec-transit-chs
