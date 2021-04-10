@@ -10,9 +10,9 @@
 $AWSProfileName="aws-networking-deep-dive-elb"
 $AWSRegion = "us-east-1"
 # Set your IP subnet for SSH access
-$myIP = "24.96.154.171/32"
+$myIP = "24.96.0.0/16"
 # Set the AMI image (change this if you change the region)
-$ami = "ami-c710e7bd" # aws-elasticbeanstalk-amzn-2017.03.1.x86_64-ecs-hvm-201709251832
+$ami = "ami-00d1bccc04cb4ae98" # aws-elasticbeanstalk-amz\n-2018.03.0.x86_64-ecs-hvm-202103271420
 # Set the name of your SSH keypair
 $keyname = "ccnetkeypair"
 
@@ -117,7 +117,7 @@ Grant-EC2SecurityGroupIngress -GroupId $appsg -IpPermissions @( $appip, $appsip,
 Grant-EC2SecurityGroupIngress -GroupId $dbsg -IpPermissions @( $dbip, $sship )
 
 # Create web instances
-$itype = "t2.nano"
+$itype = "t3.nano"
 
 $web1 = New-EC2Instance -ImageId $ami -KeyName $keyname -InstanceType $itype -SubnetId $web1a.SubnetId -SecurityGroupId $websg -AssociatePublicIp $true -PrivateIpAddress "172.31.1.21"
 $web2 = New-EC2Instance -ImageId $ami -KeyName $keyname -InstanceType $itype -SubnetId $web1b.SubnetId -SecurityGroupId $websg -AssociatePublicIp $true -PrivateIpAddress "172.31.2.22"
@@ -139,3 +139,8 @@ New-NameTag -name "app3" -resourceID $app3.Instances.InstanceId
 # Create db instance
 $db = New-EC2Instance -ImageId $ami -KeyName $keyname -InstanceType $itype -SubnetId $app1a.SubnetId -SecurityGroupId $dbsg -AssociatePublicIp $true -PrivateIpAddress "172.31.101.99"
 New-NameTag -name "db" -resourceID $db.Instances.InstanceId
+
+Start-Sleep 3
+
+# View instances
+(Get-EC2Instance -Filter $filter_reservation).Instances
