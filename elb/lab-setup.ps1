@@ -64,11 +64,24 @@ $appsg = New-EC2SecurityGroup -VpcId $vpc.VpcId -GroupName "app-sg" -GroupDescri
 $dbsg = New-EC2SecurityGroup -VpcId $vpc.VpcId -GroupName "db-sg" -GroupDescription "db-sg"
 
 #Create IPpermissions for public http and https
+
+$httpip = new-object Amazon.EC2.Model.IpPermission
+$httpip.IpProtocol = "tcp"
+$httpip.FromPort = 80
+$httpip.ToPort = 80
+$httpip.IpRanges.Add("::0/0")
+
 $httpip = new-object Amazon.EC2.Model.IpPermission
 $httpip.IpProtocol = "tcp"
 $httpip.FromPort = 80
 $httpip.ToPort = 80
 $httpip.IpRanges.Add("0.0.0.0/0")
+
+$httpsip = new-object Amazon.EC2.Model.IpPermission
+$httpsip.IpProtocol = "tcp"
+$httpsip.FromPort = 443
+$httpsip.ToPort = 443
+$httpsip.IpRanges.Add("::0/0")
 
 $httpsip = new-object Amazon.EC2.Model.IpPermission
 $httpsip.IpProtocol = "tcp"
