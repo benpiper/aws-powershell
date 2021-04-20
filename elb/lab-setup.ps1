@@ -70,11 +70,6 @@ $httpip.IpProtocol = "tcp"
 $httpip.FromPort = 80
 $httpip.ToPort = 80
 $httpip.IpRanges.Add("::0/0")
-
-$httpip = new-object Amazon.EC2.Model.IpPermission
-$httpip.IpProtocol = "tcp"
-$httpip.FromPort = 80
-$httpip.ToPort = 80
 $httpip.IpRanges.Add("0.0.0.0/0")
 
 $httpsip = new-object Amazon.EC2.Model.IpPermission
@@ -82,11 +77,6 @@ $httpsip.IpProtocol = "tcp"
 $httpsip.FromPort = 443
 $httpsip.ToPort = 443
 $httpsip.IpRanges.Add("::0/0")
-
-$httpsip = new-object Amazon.EC2.Model.IpPermission
-$httpsip.IpProtocol = "tcp"
-$httpsip.FromPort = 443
-$httpsip.ToPort = 443
 $httpsip.IpRanges.Add("0.0.0.0/0")
 
 $sship = new-object Amazon.EC2.Model.IpPermission
@@ -109,6 +99,8 @@ $appip.FromPort = 8080
 $appip.ToPort = 8080
 $appip.IpRanges.Add("172.31.1.0/24")
 $appip.IpRanges.Add("172.31.2.0/24")
+$appip.IpRanges.Add("172.31.101.0/24")
+$appip.IpRanges.Add("172.31.102.0/24")
 
 $appsip = new-object Amazon.EC2.Model.IpPermission
 $appsip.IpProtocol = "tcp"
@@ -116,6 +108,8 @@ $appsip.FromPort = 8443
 $appsip.ToPort = 8443
 $appsip.IpRanges.Add("172.31.1.0/24")
 $appsip.IpRanges.Add("172.31.2.0/24")
+$appsip.IpRanges.Add("172.31.101.0/24")
+$appsip.IpRanges.Add("172.31.102.0/24")
 
 #Create IPpermissions for DB tier
 $dbip = new-object Amazon.EC2.Model.IpPermission
@@ -130,7 +124,7 @@ Grant-EC2SecurityGroupIngress -GroupId $appsg -IpPermissions @( $appip, $appsip,
 Grant-EC2SecurityGroupIngress -GroupId $dbsg -IpPermissions @( $dbip, $sship )
 
 # Create web instances
-$itype = "t3.nano"
+$itype = "t3.micro"
 
 $web1 = New-EC2Instance -ImageId $ami -KeyName $keyname -InstanceType $itype -SubnetId $web1a.SubnetId -SecurityGroupId $websg -AssociatePublicIp $true -PrivateIpAddress "172.31.1.21"
 $web2 = New-EC2Instance -ImageId $ami -KeyName $keyname -InstanceType $itype -SubnetId $web1b.SubnetId -SecurityGroupId $websg -AssociatePublicIp $true -PrivateIpAddress "172.31.2.22"
