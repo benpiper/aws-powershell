@@ -6,18 +6,27 @@
 #Import AWS credentials
 . ./credentials.ps1
 
+# Set AWS credentials
+$AWSProfileName="aws-networking-deep-dive-route-53-dns"
+
+# Set AWS credentials and store them
+Set-AWSCredential -AccessKey $AWSAccessKey -SecretKey $AWSSecretKey -StoreAs $AWSProfileName
+
+# Load the credentials for this session
+Set-AWSCredential -ProfileName $AWSProfileName
+
 # Set region-specific settings
 $AWSRegionA = "us-east-1"
-$amiRegionA = "ami-48351d32" #aws-elasticbeanstalk-amzn-2017.09.1.x86_64-ecs-hvm-201801192255
+$amiRegionA = "ami-00d1bccc04cb4ae98" #aws-elasticbeanstalk-amzn-2018.03.0.x86_64-ecs-hvm-202103271420
 $AWSRegionB = "us-west-1"
-$amiRegionB = "ami-f7383a97" #aws-elasticbeanstalk-amzn-2017.09.1.x86_64-ecs-hvm-201801180451
+$amiRegionB = "ami-04ee69ce5f61ff15e" #aws-elasticbeanstalk-amzn-2018.03.0.x86_64-ecs-hvm-202104170041
 
 # Search for AMIs by name
-$amiName = "aws-elasticbeanstalk-amzn-2017.09.1.x86_64-ecs-hvm-2018011*"
-Get-EC2ImageByName -Region "EU-west-2" -Name $amiName | ft -Property Name,ImageId
+$amiName = "amzn2-ami-hvm-x86_64-ebs"
+Get-SSMLatestEC2Image -Region "EU-west-2" -Path ami-amazon-linux-latest -ImageName $amiName | ft -Property Name,ImageId
 
 # Set your IP subnet for SSH access
-$myIP = "24.96.154.168/29"
+$myIP = "24.96.0.0/16"
 
 # Set the name of your SSH keypair
 $regionAKeyname = "ccnetkeypair"
@@ -28,16 +37,7 @@ Get-EC2KeyPair -Region "us-east-1"
 Get-EC2KeyPair -Region "us-west-1"
 
 # Set instance type
-$itype = "t2.nano"
-
-# Set AWS credentials
-$AWSProfileName="aws-networking-deep-dive-route-53-dns"
-
-# Set AWS credentials and store them
-Set-AWSCredential -AccessKey $AWSAccessKey -SecretKey $AWSSecretKey -StoreAs $AWSProfileName
-
-# Load the credentials for this session
-Set-AWSCredential -ProfileName $AWSProfileName
+$itype = "t3.micro"
 
 ###
 ### Region A setup
