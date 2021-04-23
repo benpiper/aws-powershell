@@ -1,10 +1,15 @@
 #Import AWS credentials
 . ./credentials.ps1
 
-Set-AWSCredential -AccessKey $AWSAccessKey -SecretKey $AWSSecretKey
+$AWSProfileName="aws-networking-deep-dive-route-53-dns"
 
-#$regions = @("us-east-1","us-west-1")
-$regions = @((Get-AWSRegion).Region)
+# Load the credentials for this session
+Set-AWSCredential -ProfileName $AWSProfileName
+
+# To avoid errors, specify only the regions you're using.
+$regions = @("us-east-1","us-west-1")
+#$regions = @((Get-AWSRegion).Region)
+
 $urlprefix = "http://"
 
 $instances = @()

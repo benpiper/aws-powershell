@@ -29,3 +29,5 @@ nslookup -type=any $zonename $firstns
 
 # View nameservers only
 $zone.DelegationSet.NameServers
+
+# Remove-R53ReusableDelegationSet -Id $dsid
