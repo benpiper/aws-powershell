@@ -40,6 +40,7 @@ function Iterate-NSLookup {
             $responses.Add($ip,1)
             Write-Host Resolved unique IP: $ip
         }
+        Write-Progress -Activity "Resolving $hostname" -Status $ip -PercentComplete (($stepcounter++ / $iterations) * 100)
         Start-Sleep -seconds $sleeptime
     }
 
@@ -54,6 +55,7 @@ function Iterate-NSLookup {
     return $recordlist
 }
 
+$stepCounter = 0
 $records = Iterate-NSLookup -hostname $hostname -nameserver $nameserver -iterations $iterations -sleeptime $sleeptime
 $records | Format-Table -Property ip,count,percent
 Write-Host $records.count "unique responses" for $hostname
