@@ -211,6 +211,7 @@ $itype = "t3.micro"
     $sship.IpProtocol = "tcp"
     $sship.FromPort = 22
     $sship.ToPort = 22
+    $sship.IpRanges.Add("172.3.0.0/16")
     $sship.IpRanges.Add($myIP)
 
     Grant-EC2SecurityGroupIngress -GroupId $sg -IpPermissions @( $httpip, $httpsip, $sship )
