@@ -1,3 +1,5 @@
+Write-Warning "This will destroy AWS resources." -WarningAction Inquire
+
 $cidr = "172.9.0.0/16"
 $region = "us-west-1"
 
