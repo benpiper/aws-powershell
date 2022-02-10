@@ -13,10 +13,10 @@ I recommend using [Visual Studio Code with the PowerShell extension](https://ben
 #### [AWS Networking Deep Dive: Virtual Private Cloud (VPC)](https://pluralsight.pxf.io/c/1191775/424552/7490?subId1=github&u=https%3A%2F%2Fwww.pluralsight.com%2Fcourses%2Faws-networking-deep-dive-vpc) lab setup
 Refer to [vpc/lab-setup.md](vpc/lab-setup.md) for the lab setup for this course.
 
-#### AWS Networking Deep Dive: Elastic Load Balancing (ELB) lab setup
+#### [AWS Networking Deep Dive: Elastic Load Balancing (ELB)](https://pluralsight.pxf.io/6bXjBK) lab setup
 Refer to [elb/lab-setup.md](elb/lab-setup.md) for the lab setup for this course.
 
-#### AWS Networking Deep Dive: Route 53 DNS lab setup
+#### [AWS Networking Deep Dive: Route 53 DNS](https://pluralsight.pxf.io/n1jM96) lab setup
 Refer to [route53/lab-setup.md](route53/lab-setup.md) for the lab setup for this course.
 
 *Baked with love for PowerShell Core!*
