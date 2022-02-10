@@ -1,3 +1,5 @@
+Course link: [AWS Networking Deep Dive: Route 53 DNS](https://pluralsight.pxf.io/n1jM96)
+
 ## Lab setup
 
 [lab-setup.ps1](lab-setup.ps1) - View [lab-setup.md](lab-setup.md) for instructions
