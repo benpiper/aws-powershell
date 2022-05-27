@@ -3,7 +3,7 @@
 #Import AWS credentials
 . ./credentials.ps1
 #The credentials file should contain the following two variables:
-# $AWSAccessKey="KIAYVP4CIPPKKEX3NUX" # Replace with your access key
+# $AWSAccessKey="AKIAYVP4CIPPKKEX3NUX" # Replace with your access key
 # $AWSSecretKey="mpCNyY4qm3YvBH1f8WQjVQQ6j1Y7kiRkgvl4bbr+" # Replace with your secret key
 
 # Set AWS credentials and region
