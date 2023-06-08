@@ -11,7 +11,7 @@ Write-Host Proceed when instances are terminated
 pause
 # Remove network interfaces
 # Remove VPCs
-$vpcs = Get-EC2Vpc -Region $region -Filter @( @{name="cidr";value=$cidr})
+$vpcs = Get-EC2Vpc -Region $region -Filter @( @{Name="cidr";Values=$cidr})
 foreach ($vpc in $vpcs) { Remove-EC2Vpc -VpcId $vpc.VpcId -Force }
 # Remove resource record sets
 # Remove zones
@@ -29,7 +29,7 @@ Write-Host Proceed when instances are terminated
 pause
 # Remove network interfaces
 # Remove VPCs
-$vpcs = Get-EC2Vpc -Region $region -Filter @( @{name="cidr";value=$cidr})
+$vpcs = Get-EC2Vpc -Region $region -Filter @( @{Name="cidr";Values=$cidr})
 foreach ($vpc in $vpcs) { Remove-EC2Vpc -VpcId $vpc.VpcId -Force }
 # Remove resource record sets
 # Remove zones
