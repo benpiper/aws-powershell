@@ -16,28 +16,28 @@ Set-AWSCredential -AccessKey $AWSAccessKey -SecretKey $AWSSecretKey -StoreAs $AW
 Set-AWSCredential -ProfileName $AWSProfileName
 
 # Set region-specific settings
-$AWSRegionA = "us-east-1"
-$amiRegionA = "ami-00d1bccc04cb4ae98" #aws-elasticbeanstalk-amzn-2018.03.0.x86_64-ecs-hvm-202103271420
-$AWSRegionB = "us-west-1"
-$amiRegionB = "ami-04ee69ce5f61ff15e" #aws-elasticbeanstalk-amzn-2018.03.0.x86_64-ecs-hvm-202104170041
+$AWSRegionA = "us-east-2"
+$amiRegionA = "ami-0a821538dd9a9c47a" #aws-elasticbeanstalk-amzn-2018.03.0.x86_64-ecs-hvm-202103271420
+$AWSRegionB = "us-west-2"
+$amiRegionB = "ami-007e9773d58d4e837" #aws-elasticbeanstalk-amzn-2018.03.0.x86_64-ecs-hvm-202104170041
 
 # Search for AMIs by name
-$amiName = "amzn2-ami-hvm-x86_64-ebs"
-Get-SSMLatestEC2Image -Region "EU-west-2" -Path ami-amazon-linux-latest -ImageName $amiName | ft -Property Name,ImageId
+# $amiName = "amzn2-ami-hvm-x86_64-ebs"
+# Get-SSMLatestEC2Image -Region "EU-west-2" -Path ami-amazon-linux-latest -ImageName $amiName | ft -Property Name,ImageId
 
 # Set your IP subnet for SSH access
-$myIP = "24.96.0.0/16"
+$myIP = "104.50.0.0/16"
 
 # Set the name of your SSH keypair
-$regionAKeyname = "ccnetkeypair"
-$regionBKeyname = "ccnetkeypair"
+$regionAKeyname = "r53-keypair"
+$regionBKeyname = "r53-keypair"
 
 # Get existing keypairs
-Get-EC2KeyPair -Region "us-east-1"
-Get-EC2KeyPair -Region "us-west-1"
+Get-EC2KeyPair -Region "us-east-2"
+Get-EC2KeyPair -Region "us-west-2"
 
 # Set instance type
-$itype = "t3.micro"
+$itype = "t2.nano"
 
 ###
 ### Region A setup

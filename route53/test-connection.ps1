@@ -1,7 +1,7 @@
 # test-connection.ps1
 
 # Set AWS credentials and region
-$AWSRegion = "us-east-1"
+$AWSRegion = "us-east-2"
 
 $AWSProfileName="aws-networking-deep-dive-route-53-dns"
 

@@ -14,7 +14,7 @@ $delegationset.DelegationSet.NameServers
 $dsid = $delegationset.DelegationSet.Id
 
 # Configure zone name
-$zonename = "benpiper.host."
+$zonename = "ogata.rocks."
 
 # Create public hosted zone
 $zone = New-R53HostedZone -Name $zonename -DelegationSetId $dsid -CallerReference (Get-Random)
