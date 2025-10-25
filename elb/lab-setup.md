@@ -1,4 +1,3 @@
-AWS Networking Deep Dive: Elastic Load Balancing (ELB)
 
 ## Automated lab setup
 1. You will need the AWS PowerShell SDK installed and loaded. Run [install-awspowershell.ps1](/install-awspowershell.ps1) to take care of this, or do it manually.
