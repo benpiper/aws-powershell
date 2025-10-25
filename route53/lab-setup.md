@@ -1,4 +1,3 @@
-Course link: [AWS Networking Deep Dive: Route 53 DNS](https://pluralsight.pxf.io/n1jM96)
 
 1. You will need the AWS PowerShell SDK installed and loaded. Run [install-awspowershell.ps1](/install-awspowershell.ps1) as root/administrator to take care of this, or do it manually.
 2. Edit the file [_credentials.ps1](_credentials.ps1), replace the AWS secret key and access key with your own, and save the file as credentials.ps1
