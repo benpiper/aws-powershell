@@ -16,7 +16,7 @@ I recommend using [Visual Studio Code with the PowerShell extension](https://ben
 
 ### Terraform Setup (Alternative)
 
-If you prefer infrastructure-as-code with Terraform, we have added configurations for major lab modules. To use these:
+If you prefer infrastructure-as-code with Terraform, I have added configurations for major lab modules. To use these:
 
 1. Ensure you have [Terraform](https://www.terraform.io/downloads.html) installed.
 2. Navigate to the `terraform` directory within the module folder.
